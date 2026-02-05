@@ -1,35 +1,38 @@
 #!/bin/bash
+echo "🚀 [NyetRadio] Memulai Sinkronisasi Total..."
 
-echo "🚀 Menjalankan NyetRadio Auto-Update..."
+# 1. Bersihkan log lama
+rm -f tunnel.log
 
-# 1. Jalankan Cloudflare di background dan simpan log-nya
+# 2. Jalankan Cloudflare Tunnel di background
 cloudflared tunnel --url http://127.0.0.1:8000 > tunnel.log 2>&1 &
 CLOUDFLARE_PID=$!
 
-echo "⏳ Menunggu link Cloudflare muncul..."
-sleep 10
+echo "⏳ Menunggu link Cloudflare (15 detik)..."
+sleep 15
 
-# 2. Ambil link dari file log
+# 3. Ambil link HTTPS terbaru
 NEW_URL=$(grep -o 'https://[-0-9a-z]*\.trycloudflare.com' tunnel.log | head -n 1)
 
 if [ -z "$NEW_URL" ]; then
-    echo "❌ Gagal dapet link! Coba jalanin lagi."
+    echo "❌ Gagal dapet link Cloudflare! Cek koneksi internet lu."
     kill $CLOUDFLARE_PID
     exit 1
 fi
 
-echo "✅ Link Baru: $NEW_URL"
+echo "✅ Link Baru Ditemukan: $NEW_URL"
 
-# 3. Update index.html pake perintah sed (Ganti line yang ada .trycloudflare.com)
+# 4. Update link di index.html secara otomatis
 sed -i "s|https://.*\.trycloudflare\.com|$NEW_URL|g" index.html
 
-echo "⬆️ Push update ke GitHub..."
-git add index.html
-git commit -m "Auto-update link: $NEW_URL"
+# 5. AUTO PUSH (Fitur Baru & Link Baru)
+echo "⬆️ Mengirim update fitur & link ke GitHub..."
+git add .
+git commit -m "Auto Update: Fitur Baru & Link Tunnel ($NEW_URL)"
 git push origin main
 
-echo "🔥 GGWP! Radio lu udah online di: $NEW_URL"
-echo "Tekan Ctrl+C buat berentiin tunnel."
+echo "🔥 GGWP! Web Lu udah versi terbaru dan link udah ONLINE."
+echo "💡 Sekarang silakan jalankan 'python update_metadata.py' di tab baru."
 
-# Jaga biar script tetep jalan
+# Menjaga tunnel tetap jalan
 wait $CLOUDFLARE_PID
