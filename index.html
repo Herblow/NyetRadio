@@ -4,42 +4,77 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>NyetRadio | Live Streaming</title>
-  <link rel="stylesheet" href="style.css">
   <style>
-    /* CSS Cepat biar langsung cakep */
-    body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-    .container { max-width: 500px; margin: auto; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-    .player-box { margin-bottom: 20px; padding: 15px; border: 2px solid #3b82f6; border-radius: 10px; }
-    #nowPlaying { color: #60a5fa; font-weight: bold; margin-bottom: 10px; }
-    #chatBox { height: 200px; overflow-y: auto; background: #0f172a; text-align: left; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-size: 14px; }
-    #chatInput { width: 100%; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box; }
-    .btn-talk { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+    body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; margin: 0; }
+    .container { max-width: 500px; margin: auto; background: #1e293b; padding: 25px; border-radius: 20px; box-shadow: 0 0 50px rgba(59, 130, 246, 0.2); border: 1px solid #334155; }
+    
+    /* Status & Listener Count */
+    .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    #statusIndicator { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; }
+    .on-air { background: #ef4444; box-shadow: 0 0 15px #ef4444; animation: blink 1s infinite; }
+    .off-air { background: #475569; }
+    #listenerCount { font-size: 12px; color: #94a3b8; font-weight: bold; }
+
+    /* Visualizer Canvas */
+    #visualizer { width: 100%; height: 60px; border-radius: 10px; margin-top: 10px; background: #0f172a; }
+
+    .player-box { margin-bottom: 25px; padding: 20px; border: 2px solid #3b82f6; border-radius: 15px; background: #111827; position: relative; overflow: hidden; }
+    #nowPlaying { color: #60a5fa; font-weight: bold; margin-bottom: 10px; min-height: 24px; text-shadow: 0 0 10px rgba(96, 165, 250, 0.5); }
+    
+    /* Chat Box */
+    #chatBox { height: 200px; overflow-y: auto; background: #0f172a; text-align: left; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #334155; font-size: 14px; }
+    .chat-msg { margin-bottom: 8px; }
+    #chatInput { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; box-sizing: border-box; background: #1e293b; color: white; outline: none; }
+    
+    .btn-talk { background: #5865F2; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; }
+
+    /* Modal */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
+    .modal-content { background: #1e293b; margin: 30% auto; padding: 25px; border: 1px solid #3b82f6; width: 80%; max-width: 320px; border-radius: 20px; position: relative; }
+    .close-btn { position: absolute; right: 15px; top: 10px; color: #64748b; font-size: 24px; cursor: pointer; }
+    
+    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
   </style>
 </head>
 <body>
 
 <div class="container">
+  <div class="stats-bar">
+    <div id="statusIndicator" class="off-air">OFF AIR</div>
+    <div id="listenerCount">👥 0 Mendengarkan</div>
+  </div>
+
   <h1>🎧 NyetRadio</h1>
-  
+
   <div class="player-box">
-    <div id="nowPlaying">📡 Memuat Informasi Lagu...</div>
-    <audio id="audioPlayer" controls style="width: 100%;">
-      <source src="https://zebra-short-testing-bla.trycloudflare.com/live" type="audio/mpeg">
-      Browser lu cupu, nggak support audio.
+    <div id="nowPlaying">📡 Menunggu siaran...</div>
+    <audio id="audioPlayer" crossorigin="anonymous" controls style="width: 100%;">
+      <source src="https://https://workshop-stay-removing-unique.trycloudflare.com/live" type="audio/mpeg">
     </audio>
+    <canvas id="visualizer"></canvas>
   </div>
 
   <div id="chatBox"></div>
   <input type="text" id="chatInput" placeholder="Ketik pesan lalu Enter...">
 
-  <button class="btn-talk" onclick="window.open('https://discord.gg/68hDfgpsFb')">🎙 Join Discord Talk</button>
+  <button class="btn-talk" onclick="openModal()">🎙 Join Discord Talk</button>
+</div>
+
+<div id="discordModal" class="modal">
+  <div class="modal-content">
+    <span class="close-btn" onclick="closeModal()">&times;</span>
+    <h3 style="margin-top:0">Join Community</h3>
+    <a href="https://discord.gg/68hDfgpsFb" target="_blank" style="text-decoration:none;">
+      <button class="btn-talk">Masuk Sekarang</button>
+    </a>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-  // CONFIG FIREBASE LU (Gak usah diubah kalau udah bener)
+  // CONFIG FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyDV5K8-zseYUbtzK7QJAkyN-UnILiSFOkg",
     authDomain: "live-chat-nyet.firebaseapp.com",
@@ -52,48 +87,99 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // LOGIKA CHAT
-  const chatRef = db.ref("chat");
-  const chatInput = document.getElementById("chatInput");
-  const chatBox = document.getElementById("chatBox");
+  // 1. Logika Pendengar Real-time
+  const connectedRef = db.ref(".info/connected");
+  const myPresenceRef = db.ref("presence").push();
+  const countRef = db.ref("presence");
 
+  connectedRef.on("value", (snap) => {
+    if (snap.val() === true) {
+      myPresenceRef.onDisconnect().remove();
+      myPresenceRef.set(true);
+    }
+  });
+
+  countRef.on("value", (snap) => {
+    const count = snap.numChildren();
+    document.getElementById("listenerCount").innerText = `👥 ${count} Mendengarkan`;
+  });
+
+  // 2. Logika Status & Metadata
+  db.ref("status/live").on("value", (snap) => {
+    const isLive = snap.val();
+    const ind = document.getElementById("statusIndicator");
+    ind.innerText = isLive ? "ON AIR" : "OFF AIR";
+    ind.className = isLive ? "on-air" : "off-air";
+  });
+
+  db.ref("nowPlaying").on("value", (snap) => {
+    const song = snap.val();
+    if (song && song.title !== 'Offline') {
+      document.getElementById("nowPlaying").innerHTML = `🎵 ${song.title} - ${song.artist}`;
+    } else {
+      document.getElementById("nowPlaying").innerText = "📡 Station Offline";
+    }
+  });
+
+  // 3. Logika Visualizer (Web Audio API)
+  const audio = document.getElementById('audioPlayer');
+  const canvas = document.getElementById('visualizer');
+  const ctx = canvas.getContext('2d');
+  let audioCtx, analyser, source, dataArray;
+
+  audio.onplay = () => {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = audioCtx.createAnalyser();
+      source = audioCtx.createMediaElementSource(audio);
+      source.connect(analyser);
+      analyser.connect(audioCtx.destination);
+      analyser.fftSize = 64;
+      dataArray = new Uint8Array(analyser.frequencyBinCount);
+      draw();
+    }
+  };
+
+  function draw() {
+    requestAnimationFrame(draw);
+    analyser.getByteFrequencyData(dataArray);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const barWidth = (canvas.width / dataArray.length) * 2;
+    let x = 0;
+    dataArray.forEach(v => {
+      const h = (v / 255) * canvas.height;
+      ctx.fillStyle = `rgb(59, 130, 246)`;
+      ctx.fillRect(x, canvas.height - h, barWidth - 2, h);
+      x += barWidth;
+    });
+  }
+
+  // 4. Chat System
+  const chatInput = document.getElementById("chatInput");
   chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && chatInput.value.trim() !== "") {
-      const nama = localStorage.getItem("nama") || "User-" + Math.floor(Math.random() * 1000);
-      chatRef.push({
-        user: nama,
-        text: chatInput.value,
-        time: Date.now()
-      });
+      let nama = localStorage.getItem("nama") || "User-" + Math.floor(Math.random() * 1000);
+      db.ref("chat").push({ user: nama, text: chatInput.value });
       chatInput.value = "";
     }
   });
 
-  chatRef.limitToLast(20).on("child_added", (snapshot) => {
-    const msg = snapshot.val();
+  db.ref("chat").limitToLast(15).on("child_added", (snap) => {
+    const msg = snap.val();
     const div = document.createElement("div");
-    div.innerHTML = `<b style="color:#60a5fa">${msg.user}:</b> ${msg.text}`;
-    chatBox.appendChild(div);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    div.className = "chat-msg";
+    div.innerHTML = `<b style="color:#60a5fa">${msg.user || 'Anonim'}:</b> ${msg.text}`;
+    document.getElementById("chatBox").appendChild(div);
+    document.getElementById("chatBox").scrollTop = document.getElementById("chatBox").scrollHeight;
   });
 
-  // LOGIKA METADATA (NOW PLAYING)
-  const nowPlayingRef = db.ref("nowPlaying");
-  const nowPlayingBox = document.getElementById("nowPlaying");
-
-  nowPlayingRef.on("value", (snapshot) => {
-    const song = snapshot.val();
-    if (song) {
-      nowPlayingBox.innerHTML = `🎵 Sedang Diputar: ${song.title} - ${song.artist}`;
-    }
-  });
-
-  // Minta Nama User biar Chat gak Anonymous
+  // Modal & Name Prompt
+  function openModal() { document.getElementById("discordModal").style.display = "block"; }
+  function closeModal() { document.getElementById("discordModal").style.display = "none"; }
   if (!localStorage.getItem("nama")) {
-    const p = prompt("Masukkan Nickname lu buat chat:");
+    const p = prompt("Masukkan Nickname lu:");
     if (p) localStorage.setItem("nama", p);
   }
 </script>
-
 </body>
 </html>
