@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NyetRadio | Live Streaming</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* CSS Cepat biar langsung cakep */
+    body { background: #0f172a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
+    .container { max-width: 500px; margin: auto; background: #1e293b; padding: 20px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .player-box { margin-bottom: 20px; padding: 15px; border: 2px solid #3b82f6; border-radius: 10px; }
+    #nowPlaying { color: #60a5fa; font-weight: bold; margin-bottom: 10px; }
+    #chatBox { height: 200px; overflow-y: auto; background: #0f172a; text-align: left; padding: 10px; border-radius: 5px; margin-bottom: 10px; font-size: 14px; }
+    #chatInput { width: 100%; padding: 10px; border-radius: 5px; border: none; box-sizing: border-box; }
+    .btn-talk { background: #ef4444; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 10px; width: 100%; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🎧 NyetRadio</h1>
+  
+  <div class="player-box">
+    <div id="nowPlaying">📡 Memuat Informasi Lagu...</div>
+    <audio id="audioPlayer" controls style="width: 100%;">
+      <source src="https://zebra-short-testing-bla.trycloudflare.com/live" type="audio/mpeg">
+      Browser lu cupu, nggak support audio.
+    </audio>
+  </div>
+
+  <div id="chatBox"></div>
+  <input type="text" id="chatInput" placeholder="Ketik pesan lalu Enter...">
+
+  <button class="btn-talk" onclick="window.open('https://discord.gg/link-discord-lu')">🎙 Join Discord Talk</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
+<script>
+  // CONFIG FIREBASE LU (Gak usah diubah kalau udah bener)
+  const firebaseConfig = {
+    apiKey: "AIzaSyDV5K8-zseYUbtzK7QJAkyN-UnILiSFOkg",
+    authDomain: "live-chat-nyet.firebaseapp.com",
+    databaseURL: "https://live-chat-nyet-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "live-chat-nyet",
+    storageBucket: "live-chat-nyet.firebasestorage.app",
+    messagingSenderId: "112945135453",
+    appId: "1:112945135453:web:983ed80516e971091ef2b4"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // LOGIKA CHAT
+  const chatRef = db.ref("chat");
+  const chatInput = document.getElementById("chatInput");
+  const chatBox = document.getElementById("chatBox");
+
+  chatInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && chatInput.value.trim() !== "") {
+      const nama = localStorage.getItem("nama") || "User-" + Math.floor(Math.random() * 1000);
+      chatRef.push({
+        user: nama,
+        text: chatInput.value,
+        time: Date.now()
+      });
+      chatInput.value = "";
+    }
+  });
+
+  chatRef.limitToLast(20).on("child_added", (snapshot) => {
+    const msg = snapshot.val();
+    const div = document.createElement("div");
+    div.innerHTML = `<b style="color:#60a5fa">${msg.user}:</b> ${msg.text}`;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+
+  // LOGIKA METADATA (NOW PLAYING)
+  const nowPlayingRef = db.ref("nowPlaying");
+  const nowPlayingBox = document.getElementById("nowPlaying");
+
+  nowPlayingRef.on("value", (snapshot) => {
+    const song = snapshot.val();
+    if (song) {
+      nowPlayingBox.innerHTML = `🎵 Sedang Diputar: ${song.title} - ${song.artist}`;
+    }
+  });
+
+  // Minta Nama User biar Chat gak Anonymous
+  if (!localStorage.getItem("nama")) {
+    const p = prompt("Masukkan Nickname lu buat chat:");
+    if (p) localStorage.setItem("nama", p);
+  }
+</script>
+
+</body>
+</html>
