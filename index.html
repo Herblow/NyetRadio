@@ -3,86 +3,150 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NyetRadio | Live Streaming</title>
+  <title>NyetRadio</title>
+  <link rel="icon" type="image/png" href="https://files.catbox.moe/9f5yzk.png">
+  
   <style>
-    body { background: #020617; color: white; font-family: 'Segoe UI', sans-serif; text-align: center; padding: 20px; margin: 0; }
-    .container { max-width: 500px; margin: auto; background: #1e293b; padding: 25px; border-radius: 20px; box-shadow: 0 0 50px rgba(59, 130, 246, 0.2); border: 1px solid #334155; }
-    
-    /* Header & Stats */
-    .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    #statusIndicator { padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: bold; }
-    .on-air { background: #ef4444; box-shadow: 0 0 15px #ef4444; animation: blink 1s infinite; }
+    :root {
+      --neon-cyan: #00f2ff;
+      --neon-yellow: #facc15;
+      --dark-navy: #020617;
+      --card-bg: rgba(30, 41, 59, 0.7);
+    }
+
+    body { 
+      background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); 
+      color: white; 
+      font-family: 'Inter', 'Segoe UI', sans-serif; 
+      text-align: center; 
+      margin: 0; 
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* LOADING SCREEN */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--dark-navy);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    .loader-logo { width: 120px; animation: pulse-neon 2s infinite; }
+    .loader-bar { width: 150px; height: 4px; background: #1e293b; margin-top: 20px; border-radius: 10px; overflow: hidden; }
+    .loader-progress { width: 0%; height: 100%; background: var(--neon-cyan); animation: load 1.5s forwards; }
+    @keyframes load { to { width: 100%; } }
+    @keyframes pulse-neon {
+      0%, 100% { filter: drop-shadow(0 0 5px var(--neon-cyan)); transform: scale(1); }
+      50% { filter: drop-shadow(0 0 20px var(--neon-cyan)); transform: scale(1.05); }
+    }
+
+    /* MAIN CONTAINER */
+    .container { 
+      max-width: 450px; width: 90%;
+      background: var(--card-bg); padding: 30px; border-radius: 30px; 
+      backdrop-filter: blur(10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5); 
+      border: 1px solid rgba(255,255,255,0.1);
+      animation: slideUp 0.8s ease-out;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* LOGO & STATS */
+    .logo-main { width: 160px; height: auto; filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); margin-bottom: -10px; }
+    .logo-main:hover { transform: scale(1.1) rotate(-3deg); }
+    .radio-title { color: var(--neon-yellow); font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 10px 0; text-shadow: 3px 3px 0px #000; }
+    .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    #statusIndicator { padding: 5px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; }
+    .on-air { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); animation: blink 1.5s infinite; }
     .off-air { background: #475569; }
-    #listenerCount { font-size: 12px; color: #94a3b8; font-weight: bold; }
 
-    /* Player Box */
-    .player-box { margin-bottom: 25px; padding: 30px 20px; border: 2px solid #3b82f6; border-radius: 15px; background: #111827; }
-    #nowPlaying { color: #60a5fa; font-weight: bold; margin-bottom: 15px; min-height: 24px; text-shadow: 0 0 10px rgba(96, 165, 250, 0.5); }
+    /* PLAYER & REAL VISUALIZER */
+    .player-box { margin-bottom: 25px; padding: 25px; border-radius: 20px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.3); }
+    #nowPlaying { color: var(--neon-cyan); font-weight: bold; font-size: 14px; margin-bottom: 15px; height: 20px; }
+    
+    .visualizer-container { 
+      display: flex; justify-content: center; align-items: flex-end; 
+      height: 60px; gap: 3px; margin-top: 20px; 
+    }
+    .bar { 
+      width: 8px; background: var(--neon-cyan); 
+      border-radius: 2px 2px 0 0;
+      transition: height 0.05s ease;
+      min-height: 2px;
+    }
 
-    /* Visualizer CSS (Safe Mode) */
-    .visualizer-container { display: flex; justify-content: center; align-items: flex-end; height: 35px; gap: 4px; margin-top: 20px; }
-    .bar { width: 5px; background: #3b82f6; border-radius: 3px; display: none; animation: bounce 0.5s ease-in-out infinite alternate; }
-    @keyframes bounce { from { height: 4px; } to { height: 30px; } }
-    .bar:nth-child(2) { animation-duration: 0.4s; } .bar:nth-child(3) { animation-duration: 0.6s; }
-    .bar:nth-child(4) { animation-duration: 0.3s; } .bar:nth-child(5) { animation-duration: 0.7s; }
-    .bar:nth-child(6) { animation-duration: 0.5s; }
+    /* CHAT BOX */
+    #chatBox { 
+      height: 180px; background: rgba(15, 23, 42, 0.6); text-align: left; padding: 15px; border-radius: 15px; 
+      margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.05); font-size: 13px; overflow-y: auto;
+    }
+    #chatInput { width: 100%; padding: 14px; border-radius: 12px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; }
+    #chatInput:focus { border-color: var(--neon-cyan); }
 
-    /* Chat Box */
-    #chatBox { height: 200px; overflow-y: auto; background: #0f172a; text-align: left; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #334155; font-size: 14px; }
-    .chat-msg { margin-bottom: 8px; }
-    #chatInput { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #334155; box-sizing: border-box; background: #1e293b; color: white; outline: none; }
-    .btn-talk { background: #5865F2; color: white; border: none; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; margin-top: 10px; font-size: 14px; text-decoration: none; display: block; }
+    /* BUTTONS */
+    .btn-talk { 
+      background: linear-gradient(135deg, var(--neon-cyan) 0%, #0066ff 100%); 
+      color: #000; border: none; padding: 14px; border-radius: 12px; 
+      cursor: pointer; width: 100%; font-weight: 800; margin-top: 10px; 
+      text-transform: uppercase; transition: 0.3s; text-decoration: none; display: block;
+    }
+    .btn-talk:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0, 242, 255, 0.3); }
 
-    /* Modal */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); }
-    .modal-content { background: #1e293b; margin: 30% auto; padding: 25px; border: 1px solid #3b82f6; width: 80%; max-width: 320px; border-radius: 20px; position: relative; }
-    .close-btn { position: absolute; right: 15px; top: 10px; color: #64748b; font-size: 24px; cursor: pointer; }
-
-    @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+    .chat-msg { margin-bottom: 8px; animation: fadeIn 0.3s ease; }
   </style>
 </head>
 <body>
 
+<div id="loadingScreen">
+  <img src="https://files.catbox.moe/9f5yzk.png" class="loader-logo">
+  <div class="loader-bar"><div class="loader-progress"></div></div>
+</div>
+
 <div class="container">
   <div class="stats-bar">
     <div id="statusIndicator" class="off-air">OFF AIR</div>
-    <div id="listenerCount">👥 0 Mendengarkan</div>
+    <div id="listenerCount">👥 0 LISTENING</div>
   </div>
 
-  <h1>🎧 NyetRadio</h1>
+  <img src="https://files.catbox.moe/9f5yzk.png" alt="Logo" class="logo-main">
+  <h1 class="radio-title">NyetRadio</h1>
 
   <div class="player-box">
-    <div id="nowPlaying">📡 Menunggu siaran...</div>
-    <audio id="audioPlayer" controls preload="metadata" style="width: 100%;">
-      <source src="https://believe-nvidia-quantity-lottery.trycloudflare.com/live" type="audio/mpeg">
+    <div id="nowPlaying">📡 Awaiting Signal...</div>
+    <audio id="audioPlayer" crossorigin="anonymous" controls style="width: 100%; filter: invert(100%) brightness(1.5);">
+      <source src="https://language-pre-axis-paste.trycloudflare.com/live" type="audio/mpeg">
     </audio>
-    
+
     <div class="visualizer-container" id="visualizer">
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-      <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-    </div>
+      </div>
   </div>
 
   <div id="chatBox"></div>
-  <input type="text" id="chatInput" placeholder="Ketik pesan lalu Enter...">
-
-  <button class="btn-talk" onclick="openModal()">🎙 Join Discord Talk</button>
-</div>
-
-<div id="discordModal" class="modal">
-  <div class="modal-content">
-    <span class="close-btn" onclick="closeModal()">&times;</span>
-    <h3 style="margin-top:0">Join Community</h3>
-    <p style="font-size: 13px; color: #94a3b8;">Gabung ke obrolan NyetRadio di Discord.</p>
-    <a href="https://discord.gg/68hDfgpsFb" target="_blank" class="btn-talk">Masuk Sekarang</a>
-  </div>
+  <input type="text" id="chatInput" placeholder="Ketik pesan...">
+  <button class="btn-talk" onclick="window.open('https://discord.gg/68hDfgpsFb', '_blank')">🎙 Join Discord</button>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-  // CONFIG FIREBASE (Sesuai milik lu)
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loadingScreen').style.opacity = '0';
+      setTimeout(() => document.getElementById('loadingScreen').style.visibility = 'hidden', 800);
+    }, 1500);
+  });
+
   const firebaseConfig = {
     apiKey: "AIzaSyDV5K8-zseYUbtzK7QJAkyN-UnILiSFOkg",
     authDomain: "live-chat-nyet.firebaseapp.com",
@@ -95,64 +159,89 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // 1. Logika Pendengar Real-time
+  // Presence
   const myPresenceRef = db.ref("presence").push();
   db.ref(".info/connected").on("value", (snap) => {
     if (snap.val()) { myPresenceRef.onDisconnect().remove(); myPresenceRef.set(true); }
   });
   db.ref("presence").on("value", (snap) => {
-    document.getElementById("listenerCount").innerText = `👥 ${snap.numChildren()} Mendengarkan`;
+    document.getElementById("listenerCount").innerText = `👥 ${snap.numChildren()} LISTENING`;
   });
 
-  // 2. Logika Status & Metadata
+  // Metadata
   db.ref("status/live").on("value", (snap) => {
     const isLive = snap.val();
     const ind = document.getElementById("statusIndicator");
     ind.innerText = isLive ? "ON AIR" : "OFF AIR";
     ind.className = isLive ? "on-air" : "off-air";
   });
-
   db.ref("nowPlaying").on("value", (snap) => {
     const song = snap.val();
     document.getElementById("nowPlaying").innerHTML = (song && song.title !== 'Offline') ? `🎵 ${song.title} - ${song.artist}` : "📡 Station Offline";
   });
 
-  // 3. Logika Visualizer & Audio Control
+  // --- WINAMP VISUALIZER ENGINE ---
   const audio = document.getElementById('audioPlayer');
+  const vizContainer = document.getElementById('visualizer');
+  const numberOfBars = 16;
+  for (let i = 0; i < numberOfBars; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    vizContainer.appendChild(bar);
+  }
   const bars = document.querySelectorAll('.bar');
 
-  audio.onplay = () => { bars.forEach(b => b.style.display = 'block'); };
-  audio.onpause = () => { bars.forEach(b => b.style.display = 'none'); };
+  let audioCtx, analyser, dataArray, source;
 
-  // 4. Chat System
+  function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioCtx.createAnalyser();
+    source = audioCtx.createMediaElementSource(audio);
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+    analyser.fftSize = 64;
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+    drawVisualizer();
+  }
+
+  function drawVisualizer() {
+    requestAnimationFrame(drawVisualizer);
+    if(!analyser) return;
+    analyser.getByteFrequencyData(dataArray);
+    bars.forEach((bar, i) => {
+      let height = (dataArray[i] / 255) * 60;
+      bar.style.height = height + 'px';
+      bar.style.backgroundColor = height > 45 ? 'var(--neon-yellow)' : 'var(--neon-cyan)';
+    });
+  }
+
+  audio.onplay = () => {
+    if (!audioCtx) initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  };
+
+  // Chat System
   const chatInput = document.getElementById("chatInput");
   const chatBox = document.getElementById("chatBox");
-
   chatInput.addEventListener("keydown", (e) => {
     if (e.key === "Enter" && chatInput.value.trim() !== "") {
-      let nama = localStorage.getItem("nama") || "User-" + Math.floor(Math.random() * 1000);
+      let nama = localStorage.getItem("nama") || "Gorilla-" + Math.floor(Math.random() * 99);
       db.ref("chat").push({ user: nama, text: chatInput.value });
       chatInput.value = "";
     }
   });
-
   db.ref("chat").limitToLast(15).on("child_added", (snap) => {
     const msg = snap.val();
     const div = document.createElement("div");
     div.className = "chat-msg";
-    div.innerHTML = `<b style="color:#60a5fa">${msg.user || 'Anonim'}:</b> ${msg.text}`;
+    div.innerHTML = `<b style="color:var(--neon-cyan)">${msg.user}:</b> ${msg.text}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 
-  // 5. Modal & Nickname
-  const modal = document.getElementById("discordModal");
-  function openModal() { modal.style.display = "block"; }
-  function closeModal() { modal.style.display = "none"; }
-  window.onclick = (e) => { if(e.target == modal) closeModal(); }
-
   if (!localStorage.getItem("nama")) {
-    const p = prompt("Masukkan Nickname lu:");
+    const p = prompt("Nama Gorila lu siapa?");
     if (p) localStorage.setItem("nama", p);
   }
 </script>
