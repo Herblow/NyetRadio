@@ -23,63 +23,86 @@
       overflow-x: hidden;
     }
 
-    /* KONTENER UTAMA (DESAIN LAMA LU) */
+    /* LOADING SCREEN */
+    #loadingScreen {
+      position: fixed; inset: 0; background: var(--dark-navy); z-index: 9999;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      transition: opacity 0.8s ease, visibility 0.8s;
+    }
+    .loader-logo { width: 120px; animation: pulse-neon 2s infinite; }
+    @keyframes pulse-neon { 0%, 100% { filter: drop-shadow(0 0 5px var(--neon-cyan)); } 50% { filter: drop-shadow(0 0 20px var(--neon-cyan)); } }
+
+    /* MAIN CONTAINER */
     .container { 
-      max-width: 450px; width: 90%; background: var(--card-bg); 
-      padding: 30px; border-radius: 30px; backdrop-filter: blur(10px);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
-      position: relative; z-index: 10;
+      max-width: 450px; width: 90%; background: var(--card-bg); padding: 30px; border-radius: 30px; 
+      backdrop-filter: blur(10px); box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
     }
 
-    /* LOGO / ALBUM ART (UKURAN TETEP SAMA KAYAK LOGO LAMA) */
-    .logo-main { 
-        width: 160px; height: 160px; border-radius: 20px; 
-        object-fit: cover; filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); 
-        transition: 0.4s; margin-bottom: 10px; 
-    }
+    /* LOGO & STATS (ON AIR/OFF AIR) */
+    .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    #statusIndicator { padding: 5px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; }
+    .on-air { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); animation: blink 1.5s infinite; }
+    .off-air { background: #475569; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
 
+    .logo-main { width: 160px; height: 160px; border-radius: 20px; object-fit: cover; filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); margin-bottom: -10px; transition: 0.4s; }
     .radio-title { color: var(--neon-yellow); font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 10px 0; text-shadow: 3px 3px 0px #000; }
 
-    /* VISUALIZER PLASMA (DESAIN LAMA) */
+    /* VISUALIZER SCREEN (TAP TO CHANGE) */
     #vizWallpaper {
       width: 100%; height: 160px; background: #000; border-radius: 20px; 
       margin: 15px 0; overflow: hidden; display: none; border: 2px solid var(--neon-cyan);
+      position: relative; cursor: pointer;
     }
-    .plasma-bg {
-      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-      background-size: 400% 400%; animation: gradientBG 3s ease infinite; height: 100%;
-    }
+    .viz-mode { position: absolute; inset: 0; display: none; }
+    .viz-mode.active { display: block; }
+
+    /* MODE 1: PLASMA */
+    .plasma-bg { background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab); background-size: 400% 400%; animation: gradientBG 3s ease infinite; height: 100%; }
     @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
+    /* MODE 2: RETRO GRID */
+    .grid-bg { background: #000; perspective: 200px; height: 100%; overflow: hidden; }
+    .grid-lines { position: absolute; width: 200%; height: 200%; left: -50%; top: -50%; background-image: linear-gradient(rgba(0, 242, 255, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 242, 255, 0.5) 1px, transparent 1px); background-size: 40px 40px; transform: rotateX(60deg); animation: gridMove 1s linear infinite; }
+    @keyframes gridMove { 0% { transform: rotateX(60deg) translateY(0); } 100% { transform: rotateX(60deg) translateY(40px); } }
+
+    /* PLAYER BOX & MINI BARS */
     .player-box { margin-bottom: 25px; padding: 25px; border-radius: 20px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.3); }
     #nowPlaying { color: var(--neon-cyan); font-weight: bold; font-size: 14px; margin-bottom: 15px; }
-
-    /* MINI VISUALIZER BARS */
     .visualizer-container { display: flex; justify-content: center; align-items: flex-end; height: 45px; gap: 3px; }
-    .bar { width: 8px; background: var(--neon-cyan); border-radius: 2px; transition: height 0.1s ease; min-height: 3px; }
+    .bar { width: 8px; background: var(--neon-cyan); border-radius: 2px; min-height: 3px; }
 
+    /* CHAT & BUTTON */
     #chatBox { height: 150px; background: rgba(15, 23, 42, 0.6); text-align: left; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-size: 13px; overflow-y: auto; }
     #chatInput { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; }
-    .btn-talk { background: linear-gradient(135deg, var(--neon-cyan) 0%, #0066ff 100%); color: #000; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 800; margin-top: 10px; text-decoration: none; display: block; }
+    .btn-talk { background: linear-gradient(135deg, var(--neon-cyan) 0%, #0066ff 100%); color: #000; border: none; padding: 12px; border-radius: 12px; cursor: pointer; width: 100%; font-weight: 800; margin-top: 10px; text-decoration: none; display: block; }
   </style>
 </head>
 <body>
 
+<div id="loadingScreen">
+  <img src="https://files.catbox.moe/rse57p.png" class="loader-logo">
+</div>
+
 <div class="container">
+  <div class="stats-bar">
+    <div id="statusIndicator" class="off-air">OFF AIR</div>
+    <div id="listenerCount">👥 0 LISTENING</div>
+  </div>
+
   <img src="https://files.catbox.moe/rse57p.png" id="albumArt" class="logo-main">
-  
   <h1 class="radio-title">NyetRadio</h1>
 
   <div id="vizWallpaper">
-    <div class="plasma-bg"></div>
+    <div class="viz-mode active" id="viz-plasma"><div class="plasma-bg"></div></div>
+    <div class="viz-mode" id="viz-grid"><div class="grid-bg"><div class="grid-lines"></div></div></div>
   </div>
 
   <div class="player-box">
     <div id="nowPlaying">📡 Awaiting Signal...</div>
     <audio id="audioPlayer" controls style="width: 100%; filter: invert(100%);">
-      <source src="https://listen-mistakes-really-belong.trycloudflare.com/live" type="audio/mpeg">
+      <source src="https://appropriate-tonight-announce-speed.trycloudflare.com/live" type="audio/mpeg">
     </audio>
-
     <div class="visualizer-container" id="visualizer"></div>
   </div>
 
@@ -92,7 +115,8 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-  // Pakai config lu yang asli
+  window.addEventListener('load', () => { setTimeout(() => { document.getElementById('loadingScreen').style.opacity = '0'; setTimeout(() => document.getElementById('loadingScreen').style.visibility = 'hidden', 800); }, 1500); });
+
   const firebaseConfig = {
     apiKey: "AIzaSyDV5K8-zseYUbtzK7QJAkyN-UnILiSFOkg",
     authDomain: "live-chat-nyet.firebaseapp.com",
@@ -102,72 +126,76 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // --- LOGIKA COVER ALBUM OTOMATIS ---
-  async function updateArtwork(title, artist) {
-    const artEl = document.getElementById('albumArt');
+  // COVER ART LOGIC
+  async function updateArtwork(t, a) {
+    const art = document.getElementById('albumArt');
     try {
-      const query = encodeURIComponent(`${title} ${artist}`);
-      const res = await fetch(`https://itunes.apple.com/search?term=${query}&limit=1&entity=song`);
-      const data = await res.json();
-      if (data.results.length > 0) {
-        artEl.src = data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
-      } else {
-        artEl.src = "https://files.catbox.moe/rse57p.png"; // Balik ke logo asli kalau gak ketemu
-      }
-    } catch (e) { artEl.src = "https://files.catbox.moe/rse57p.png"; }
+      const q = encodeURIComponent(`${t} ${a}`);
+      const r = await fetch(`https://itunes.apple.com/search?term=${q}&limit=1&entity=song`);
+      const d = await r.json();
+      art.src = d.results.length > 0 ? d.results[0].artworkUrl100.replace('100x100bb', '600x600bb') : "https://files.catbox.moe/rse57p.png";
+    } catch (e) { art.src = "https://files.catbox.moe/rse57p.png"; }
   }
 
-  // --- SYNC FIREBASE ---
+  // FIREBASE SYNC (NOW PLAYING, STATUS, PRESENCE)
   db.ref("nowPlaying").on("value", (snap) => {
-    const song = snap.val();
-    const np = document.getElementById("nowPlaying");
-    if (song && song.title && song.title !== 'undefined') {
-      np.innerHTML = `🎵 ${song.title} - ${song.artist}`;
-      updateArtwork(song.title, song.artist);
+    const s = snap.val();
+    if (s && s.title && s.title !== 'undefined') {
+      document.getElementById("nowPlaying").innerHTML = `🎵 ${s.title} - ${s.artist}`;
+      updateArtwork(s.title, s.artist);
     } else {
-      np.innerText = "📡 Station Offline";
+      document.getElementById("nowPlaying").innerText = "📡 Station Offline";
       document.getElementById('albumArt').src = "https://files.catbox.moe/rse57p.png";
     }
   });
 
-  // --- VISUALIZER BARS (DESAIN LAMA) ---
+  db.ref("status/live").on("value", (snap) => {
+    const isLive = snap.val();
+    const ind = document.getElementById("statusIndicator");
+    ind.innerText = isLive ? "ON AIR" : "OFF AIR";
+    ind.className = isLive ? "on-air" : "off-air";
+  });
+
+  db.ref("presence").on("value", (s) => { document.getElementById("listenerCount").innerText = `👥 ${s.numChildren()} LISTENING`; });
+
+  // VISUALIZER (TAP TO CHANGE)
   const audio = document.getElementById('audioPlayer');
-  const vizContainer = document.getElementById('visualizer');
   const vizWallpaper = document.getElementById('vizWallpaper');
-  
-  for(let i=0; i<15; i++) {
-    const bar = document.createElement('div');
-    bar.className = 'bar';
-    vizContainer.appendChild(bar);
-  }
+  const vizModes = ['viz-plasma', 'viz-grid'];
+  let currentMode = 0;
+
+  vizWallpaper.onclick = () => {
+    document.getElementById(vizModes[currentMode]).classList.remove('active');
+    currentMode = (currentMode + 1) % vizModes.length;
+    document.getElementById(vizModes[currentMode]).classList.add('active');
+  };
+
+  const vc = document.getElementById('visualizer');
+  for(let i=0; i<15; i++) { const b = document.createElement('div'); b.className='bar'; vc.appendChild(b); }
 
   audio.onplay = () => {
     vizWallpaper.style.display = 'block';
-    setInterval(() => {
-      document.querySelectorAll('.bar').forEach(b => {
-        b.style.height = (Math.random() * 40 + 5) + 'px';
-      });
-    }, 100);
+    setInterval(() => { document.querySelectorAll('.bar').forEach(b => { b.style.height = (Math.random()*40+5)+'px'; }); }, 100);
   };
   audio.onpause = () => { vizWallpaper.style.display = 'none'; };
 
-  // --- CHAT LOGIC (SIMPLE) ---
-  const chatInput = document.getElementById("chatInput");
-  const chatBox = document.getElementById("chatBox");
-  chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && chatInput.value !== "") {
-      let n = localStorage.getItem("nama") || "Nyet-" + Math.floor(Math.random()*99);
-      db.ref("chat").push({ user: n, text: chatInput.value });
-      chatInput.value = "";
+  // CHAT
+  const ci = document.getElementById("chatInput");
+  const cb = document.getElementById("chatBox");
+  ci.onkeydown = (e) => {
+    if (e.key === "Enter" && ci.value !== "") {
+      let n = localStorage.getItem("nama") || "Nyet-"+Math.floor(Math.random()*99);
+      db.ref("chat").push({ user: n, text: ci.value });
+      ci.value = "";
     }
-  });
-  db.ref("chat").limitToLast(10).on("child_added", (snap) => {
-    const m = snap.val();
+  };
+  db.ref("chat").limitToLast(10).on("child_added", (s) => {
+    const m = s.val();
     const d = document.createElement("div");
     d.innerHTML = `<b style="color:var(--neon-cyan)">${m.user}:</b> ${m.text}`;
-    chatBox.appendChild(d);
-    chatBox.scrollTop = chatBox.scrollHeight;
+    cb.appendChild(d); cb.scrollTop = cb.scrollHeight;
   });
 </script>
 </body>
 </html>
+
