@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NyetRadio - Live Stream</title>
+  <title>NyetRadio</title>
   <link rel="icon" type="image/png" href="https://files.catbox.moe/rse57p.png">
+
   <style>
     :root {
       --neon-cyan: #00f2ff;
@@ -19,80 +20,79 @@
       color: white; font-family: 'Inter', sans-serif; 
       text-align: center; margin: 0; display: flex;
       justify-content: center; align-items: center; min-height: 100vh;
+      overflow-x: hidden;
     }
 
+    /* KONTENER UTAMA (DESAIN LAMA LU) */
     .container { 
       max-width: 450px; width: 90%; background: var(--card-bg); 
       padding: 30px; border-radius: 30px; backdrop-filter: blur(10px);
       box-shadow: 0 20px 50px rgba(0,0,0,0.5); border: 1px solid rgba(255,255,255,0.1);
+      position: relative; z-index: 10;
     }
 
-    /* ALBUM ART GG */
-    #albumArt {
-      width: 200px; height: 200px; border-radius: 20px;
-      object-fit: cover; margin: 10px auto 20px;
-      display: block; box-shadow: 0 0 30px rgba(0, 242, 255, 0.3);
-      border: 3px solid var(--neon-cyan);
-      transition: all 0.5s ease;
+    /* LOGO / ALBUM ART (UKURAN TETEP SAMA KAYAK LOGO LAMA) */
+    .logo-main { 
+        width: 160px; height: 160px; border-radius: 20px; 
+        object-fit: cover; filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); 
+        transition: 0.4s; margin-bottom: 10px; 
     }
 
-    .radio-title { color: var(--neon-yellow); font-size: 28px; font-weight: 900; margin: 10px 0; text-shadow: 3px 3px 0px #000; }
-    
-    #nowPlaying { 
-      color: var(--neon-cyan); font-weight: bold; font-size: 16px; 
-      margin-bottom: 20px; min-height: 24px;
-      text-transform: capitalize;
-    }
+    .radio-title { color: var(--neon-yellow); font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 10px 0; text-shadow: 3px 3px 0px #000; }
 
-    .player-box { 
-      padding: 20px; border-radius: 20px; background: rgba(15, 23, 42, 0.8); 
-      border: 1px solid rgba(59, 130, 246, 0.3); 
+    /* VISUALIZER PLASMA (DESAIN LAMA) */
+    #vizWallpaper {
+      width: 100%; height: 160px; background: #000; border-radius: 20px; 
+      margin: 15px 0; overflow: hidden; display: none; border: 2px solid var(--neon-cyan);
     }
-
-    audio { width: 100%; filter: invert(100%) brightness(1.5); margin-top: 10px; }
-
-    #chatBox { 
-      height: 150px; background: rgba(15, 23, 42, 0.6); text-align: left; 
-      padding: 15px; border-radius: 15px; margin: 20px 0 10px;
-      font-size: 13px; overflow-y: auto; border: 1px solid rgba(255,255,255,0.05);
+    .plasma-bg {
+      background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+      background-size: 400% 400%; animation: gradientBG 3s ease infinite; height: 100%;
     }
+    @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    #chatInput { 
-      width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; 
-      background: #0f172a; color: white; box-sizing: border-box;
-    }
+    .player-box { margin-bottom: 25px; padding: 25px; border-radius: 20px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(59, 130, 246, 0.3); }
+    #nowPlaying { color: var(--neon-cyan); font-weight: bold; font-size: 14px; margin-bottom: 15px; }
 
-    .btn-discord {
-      background: linear-gradient(135deg, #5865F2 0%, #4752C4 100%);
-      color: white; border: none; padding: 12px; border-radius: 10px;
-      width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px;
-      text-decoration: none; display: inline-block;
-    }
+    /* MINI VISUALIZER BARS */
+    .visualizer-container { display: flex; justify-content: center; align-items: flex-end; height: 45px; gap: 3px; }
+    .bar { width: 8px; background: var(--neon-cyan); border-radius: 2px; transition: height 0.1s ease; min-height: 3px; }
+
+    #chatBox { height: 150px; background: rgba(15, 23, 42, 0.6); text-align: left; padding: 15px; border-radius: 15px; margin-bottom: 15px; font-size: 13px; overflow-y: auto; }
+    #chatInput { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #334155; background: #0f172a; color: white; outline: none; box-sizing: border-box; }
+    .btn-talk { background: linear-gradient(135deg, var(--neon-cyan) 0%, #0066ff 100%); color: #000; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: 800; margin-top: 10px; text-decoration: none; display: block; }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <img id="albumArt" src="https://files.catbox.moe/rse57p.png" alt="Cover">
-  <h1 class="radio-title">NyetRadio</h1>
+  <img src="https://files.catbox.moe/rse57p.png" id="albumArt" class="logo-main">
   
+  <h1 class="radio-title">NyetRadio</h1>
+
+  <div id="vizWallpaper">
+    <div class="plasma-bg"></div>
+  </div>
+
   <div class="player-box">
-    <div id="nowPlaying">📡 Menghubungkan...</div>
-    <audio id="audioPlayer" controls>
-      <source src="https://taxes-housing-indexes-snowboard.trycloudflare.com/live" type="audio/mpeg">
+    <div id="nowPlaying">📡 Awaiting Signal...</div>
+    <audio id="audioPlayer" controls style="width: 100%; filter: invert(100%);">
+      <source src="https://listen-mistakes-really-belong.trycloudflare.com/live" type="audio/mpeg">
     </audio>
+
+    <div class="visualizer-container" id="visualizer"></div>
   </div>
 
   <div id="chatBox"></div>
   <input type="text" id="chatInput" placeholder="Ketik pesan...">
-  <a href="https://discord.gg/68hDfgpsFb" target="_blank" class="btn-discord">JOIN DISCORD</a>
+  <a href="https://discord.gg/68hDfgpsFb" target="_blank" class="btn-talk">🎙 JOIN DISCORD</a>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-  // Konfigurasi Firebase Lu
+  // Pakai config lu yang asli
   const firebaseConfig = {
     apiKey: "AIzaSyDV5K8-zseYUbtzK7QJAkyN-UnILiSFOkg",
     authDomain: "live-chat-nyet.firebaseapp.com",
@@ -102,68 +102,72 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  const albumArt = document.getElementById('albumArt');
-  const nowPlaying = document.getElementById('nowPlaying');
-
-  // FUNGSI MENCARI COVER ALBUM (ARTWORK)
+  // --- LOGIKA COVER ALBUM OTOMATIS ---
   async function updateArtwork(title, artist) {
+    const artEl = document.getElementById('albumArt');
     try {
-      // Cari di iTunes API
       const query = encodeURIComponent(`${title} ${artist}`);
       const res = await fetch(`https://itunes.apple.com/search?term=${query}&limit=1&entity=song`);
       const data = await res.json();
-
       if (data.results.length > 0) {
-        // Ambil gambar resolusi tinggi
-        const imgUrl = data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
-        albumArt.src = imgUrl;
+        artEl.src = data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
       } else {
-        // Default logo kalau gak ketemu
-        albumArt.src = "https://files.catbox.moe/rse57p.png";
+        artEl.src = "https://files.catbox.moe/rse57p.png"; // Balik ke logo asli kalau gak ketemu
       }
-    } catch (e) {
-      albumArt.src = "https://files.catbox.moe/rse57p.png";
-    }
+    } catch (e) { artEl.src = "https://files.catbox.moe/rse57p.png"; }
   }
 
-  // LISTEN DATA DARI FIREBASE
+  // --- SYNC FIREBASE ---
   db.ref("nowPlaying").on("value", (snap) => {
-    const data = snap.val();
-    if (data && data.title && data.title !== 'undefined') {
-      nowPlaying.innerHTML = `🎵 ${data.title} <br> <small style="color:var(--neon-yellow)">${data.artist}</small>`;
-      updateArtwork(data.title, data.artist);
+    const song = snap.val();
+    const np = document.getElementById("nowPlaying");
+    if (song && song.title && song.title !== 'undefined') {
+      np.innerHTML = `🎵 ${song.title} - ${song.artist}`;
+      updateArtwork(song.title, song.artist);
     } else {
-      nowPlaying.innerText = "📡 Station Offline";
-      albumArt.src = "https://files.catbox.moe/rse57p.png";
+      np.innerText = "📡 Station Offline";
+      document.getElementById('albumArt').src = "https://files.catbox.moe/rse57p.png";
     }
   });
 
-  // CHAT LOGIC (SIMPLE)
+  // --- VISUALIZER BARS (DESAIN LAMA) ---
+  const audio = document.getElementById('audioPlayer');
+  const vizContainer = document.getElementById('visualizer');
+  const vizWallpaper = document.getElementById('vizWallpaper');
+  
+  for(let i=0; i<15; i++) {
+    const bar = document.createElement('div');
+    bar.className = 'bar';
+    vizContainer.appendChild(bar);
+  }
+
+  audio.onplay = () => {
+    vizWallpaper.style.display = 'block';
+    setInterval(() => {
+      document.querySelectorAll('.bar').forEach(b => {
+        b.style.height = (Math.random() * 40 + 5) + 'px';
+      });
+    }, 100);
+  };
+  audio.onpause = () => { vizWallpaper.style.display = 'none'; };
+
+  // --- CHAT LOGIC (SIMPLE) ---
   const chatInput = document.getElementById("chatInput");
   const chatBox = document.getElementById("chatBox");
-
   chatInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && chatInput.value.trim() !== "") {
-      let user = localStorage.getItem("nama") || "Nyet-" + Math.floor(Math.random()*99);
-      db.ref("chat").push({ user: user, text: chatInput.value });
+    if (e.key === "Enter" && chatInput.value !== "") {
+      let n = localStorage.getItem("nama") || "Nyet-" + Math.floor(Math.random()*99);
+      db.ref("chat").push({ user: n, text: chatInput.value });
       chatInput.value = "";
     }
   });
-
   db.ref("chat").limitToLast(10).on("child_added", (snap) => {
-    const msg = snap.val();
-    const div = document.createElement("div");
-    div.style.marginBottom = "5px";
-    div.innerHTML = `<b style="color:var(--neon-cyan)">${msg.user}:</b> ${msg.text}`;
-    chatBox.appendChild(div);
+    const m = snap.val();
+    const d = document.createElement("div");
+    d.innerHTML = `<b style="color:var(--neon-cyan)">${m.user}:</b> ${m.text}`;
+    chatBox.appendChild(d);
     chatBox.scrollTop = chatBox.scrollHeight;
   });
-
-  if(!localStorage.getItem("nama")) {
-    const p = prompt("Nama lu siapa bos?");
-    if(p) localStorage.setItem("nama", p);
-  }
 </script>
-
 </body>
 </html>
