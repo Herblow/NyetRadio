@@ -121,6 +121,18 @@
       transition: height 0.1s ease;
       min-height: 3px;
     }
+    
+    .ad-banner {
+    background: rgba(0, 0, 0, 0.5); /* Hitam transparan biar nyambung sama tema */
+    color: #fff;
+    padding: 8px 0;
+    margin: 15px 0;
+    border-radius: 8px;
+    border: 1px solid #333;
+    font-family: 'Courier New', Courier, monospace; /* Biar kerasa vibe coding-nya */
+    font-size: 0.9em;
+    }
+
 
     /* CHAT BOX */
     #chatBox { 
@@ -183,12 +195,20 @@
   <div class="player-box">
     <div id="nowPlaying">📡 Awaiting Signal...</div>
     <audio id="audioPlayer" controls style="width: 100%; filter: invert(100%) brightness(1.5);">
-      <source src="https://afford-arctic-griffin-description.trycloudflare.com/live" type="audio/mpeg">
+      <source src="https://shift-dev-particles-cardiac.trycloudflare.com/live" type="audio/mpeg">
     </audio>
 
     <div class="visualizer-container" id="visualizer">
       </div>
   </div>
+
+  <div class="ad-banner">
+    <marquee behavior="scroll" direction="left">
+        🚀 <span style="color: #ffcc00; font-weight: bold;">AD:</span> 
+        NyetStudio - Ubah ide menjadi masterpiece! 🔥 
+        Cek di: <span style="text-decoration: underline;">nyetstudio.gt.tc</span> 
+    </marquee>
+   </div>
 
   <div id="chatBox"></div>
   <input type="text" id="chatInput" placeholder="Ketik pesan lalu Enter...">
