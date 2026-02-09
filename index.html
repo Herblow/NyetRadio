@@ -3,58 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NyetRadio - Masterpiece Edition</title>
+    <title>NYETRADIO</title>
     <style>
-        /* Gaya dasar tetep ikutin tema dark lu */
-        body { background-color: #0d1117; color: white; font-family: sans-serif; text-align: center; }
-        
-        /* Style Banner Iklan NyetStudio */
-        .nyet-ad-container {
+        /* Base Theme */
+        body {
+            background-color: #0d1117;
+            color: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Status ON AIR */
+        .status-badge {
+            background-color: #ff4444;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            align-self: flex-start;
+        }
+
+        /* Album Art */
+        #album-art {
+            width: 250px;
+            height: 250px;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(88, 166, 255, 0.3);
+            object-fit: cover;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            color: #ffcc00;
+            letter-spacing: 2px;
+            margin: 10px 0;
+        }
+
+        /* Metadata & Audio Player */
+        .player-box {
             background: rgba(255, 255, 255, 0.05);
-            border-top: 1px solid #30363d;
-            border-bottom: 1px solid #30363d;
-            margin: 20px 0;
-            padding: 10px 0;
+            border-radius: 15px;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        #track-info {
+            color: #58a6ff;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        /* BANNER IKLAN NYETSTUDIO - Masterpiece Edition */
+        .nyet-ad-container {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid #30363d;
+            margin-top: 15px;
+            padding: 8px 0;
+            width: 100%;
             overflow: hidden;
+            border-radius: 5px;
         }
         
         .nyet-ad-text {
             font-family: 'Courier New', Courier, monospace;
-            font-size: 14px;
-            color: #58a6ff; /* Warna biru khas coding */
+            font-size: 13px;
+            color: #8b949e;
         }
 
-        .highlight {
-            color: #ff7b72; /* Warna merah aksen */
-            font-weight: bold;
+        /* Chatbox */
+        #chat-container {
+            width: 90%;
+            max-width: 400px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            margin-top: 20px;
+            padding: 10px;
+            text-align: left;
         }
     </style>
 </head>
 <body>
 
-    <div id="player-container">
-        <img src="cover.jpg" id="album-art" style="width: 200px; border-radius: 15px; box-shadow: 0 0 20px rgba(88, 166, 255, 0.5);">
-        <h2 id="radio-name">NYETRADIO</h2>
-        <div id="metadata-container">
-            <p id="track-info">🎵 <span id="current-track">Loading...</span></p>
+    <div class="status-badge" id="status-live">ON AIR</div>
+
+    <img src="https://via.placeholder.com/250" id="album-art" alt="Cover">
+    <h1>NYETRADIO</h1>
+
+    <div class="player-box">
+        <div id="track-info">🎵 <span id="current-track">Loading...</span></div>
+        <audio id="audio-player" controls style="width: 100%;">
+            <source src="URL_STREAMING_LU" type="audio/mpeg">
+        </audio>
+
+        <div class="nyet-ad-container">
+            <marquee class="nyet-ad-text" behavior="scroll" direction="left" scrollamount="5">
+                🚀 <span style="color: #ff7b72;">AD:</span> NyetStudio — "Ubah ide menjadi masterpiece" 🔥 
+                | Cek di: <a href="https://nyetstudio.gt.tc/" style="color: #58a6ff; text-decoration: none;">nyetstudio.gt.tc</a>
+            </marquee>
         </div>
     </div>
 
-    <div class="nyet-ad-container">
-        <marquee class="nyet-ad-text" behavior="scroll" direction="left" scrollamount="6">
-            🚀 <span class="highlight">AD:</span> NyetStudio — "Ubah ide menjadi masterpiece" 🔥 
-            | Jasa Coding, Desain, & Troubleshooting Android Pro 
-            | Hubungi: <a href="https://nyetstudio.gt.tc/" style="color: #d2a8ff; text-decoration: none;">nyetstudio.gt.tc</a> ⚡
-        </marquee>
-    </div>
-
     <div id="chat-container">
-        <div id="chat-messages" style="height: 300px; overflow-y: auto; text-align: left; padding: 10px;">
+        <div id="chat-messages" style="height: 200px; overflow-y: auto; font-size: 14px;">
             </div>
     </div>
 
     <script>
-        // ... Logic Firebase update_metadata lu ...
+        // Masukin script Firebase lu yang lama di sini biar metadata tetep update dari Termux!
     </script>
 </body>
 </html>
