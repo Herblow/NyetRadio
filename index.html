@@ -15,6 +15,29 @@
       --card-bg: rgba(30, 41, 59, 0.9);
     }
 
+    /* EFEK CRT GLOBAL */
+    .crt-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: radial-gradient(circle, rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 100%),
+                  rgba(18, 16, 16, 0.1);
+      opacity: 0.15; pointer-events: none; z-index: 999;
+    }
+
+    .scanlines {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%),
+                  linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+      background-size: 100% 3px, 3px 100%;
+      pointer-events: none; z-index: 1000;
+      animation: flicker 0.15s infinite;
+    }
+
+    @keyframes flicker {
+      0% { opacity: 0.1; }
+      50% { opacity: 0.13; }
+      100% { opacity: 0.1; }
+    }
+
     body { 
       background: radial-gradient(circle at center, #0f172a 0%, #020617 100%); 
       color: white; 
@@ -73,6 +96,7 @@
       z-index: 1;
       opacity: 0;
       transition: opacity 0.5s ease;
+      filter: blur(0.4px) contrast(1.2) brightness(1.2); /* Retro Filter */
     }
 
     /* LOGO & ARTWORK WITH FADE EFFECT */
@@ -90,7 +114,7 @@
     .on-air { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); animation: blink 1.5s infinite; }
     .off-air { background: #475569; }
 
-    /* VISUALIZER SCREEN (Lama tetep disimpen biar gak ilang) */
+    /* VISUALIZER SCREEN */
     #vizWallpaper {
       width: 100%; height: 120px; background: #000; border-radius: 20px; 
       margin: 15px 0; overflow: hidden; display: none; border: 2px solid var(--neon-cyan);
@@ -141,6 +165,9 @@
 </head>
 <body>
 
+<div class="crt-overlay"></div>
+<div class="scanlines"></div>
+
 <div id="loadingScreen">
   <img src="https://files.catbox.moe/rse57p.png" class="loader-logo">
   <div class="loader-bar"><div class="loader-progress"></div></div>
@@ -156,7 +183,7 @@
     <canvas id="circularViz" width="520" height="520"></canvas>
     <img src="https://files.catbox.moe/rse57p.png" id="albumArt" alt="Logo" class="logo-main">
   </div>
-  
+
   <h1 class="radio-title">NyetRadio</h1>
 
   <div id="vizWallpaper">
@@ -169,7 +196,7 @@
   <div class="player-box">
     <div id="nowPlaying">📡 Awaiting Signal...</div>
     <audio id="audioPlayer" controls style="width: 100%; filter: invert(100%) brightness(1.5);">
-      <source src="https://ease-blocking-turbo-surveillance.trycloudflare.com/live" type="audio/mpeg">
+      <source src="https://pine-faster-response-customs.trycloudflare.com/live" type="audio/mpeg">
     </audio>
     <div class="visualizer-container" id="visualizer"></div>
   </div>
@@ -214,7 +241,7 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
-  // --- LOGIC CIRCULAR VISUALIZER (ALA YOUTUBE) ---
+  // --- LOGIC CIRCULAR VISUALIZER (RETRO STYLE) ---
   const circCanvas = document.getElementById('circularViz');
   const circCtx = circCanvas.getContext('2d');
   let circAnimId;
@@ -222,7 +249,7 @@
   function drawCircular() {
     circAnimId = requestAnimationFrame(drawCircular);
     circCtx.clearRect(0, 0, circCanvas.width, circCanvas.height);
-    
+
     const centerX = circCanvas.width / 2;
     const centerY = circCanvas.height / 2;
     const radius = 105;
@@ -233,18 +260,23 @@
       const pulse = Math.random() * 35;
       const barHeight = 8 + slow + pulse;
       const angle = (i * Math.PI * 2) / bars;
-      
+
       const x1 = centerX + Math.cos(angle) * radius;
       const y1 = centerY + Math.sin(angle) * radius;
       const x2 = centerX + Math.cos(angle) * (radius + barHeight);
       const y2 = centerY + Math.sin(angle) * (radius + barHeight);
 
-      circCtx.strokeStyle = i % 2 === 0 ? '#00f2ff' : '#ff00ff';
+      // RETRO COLOR JUMPER
+      const r = i % 2 === 0 ? 0 : 255;
+      const g = i % 2 === 0 ? 242 : 0;
+      const b = i % 2 === 0 ? 255 : 255;
+      
+      circCtx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${0.7 + Math.random() * 0.3})`;
       circCtx.lineWidth = 4;
       circCtx.lineCap = 'round';
-      circCtx.shadowBlur = 10;
+      circCtx.shadowBlur = 12;
       circCtx.shadowColor = circCtx.strokeStyle;
-      
+
       circCtx.beginPath();
       circCtx.moveTo(x1, y1);
       circCtx.lineTo(x2, y2);
@@ -320,11 +352,8 @@
   vizWallpaper.addEventListener('click', changeVisualizer);
 
   audio.onplay = () => {
-    // Aktifin Viz Lingkaran
     circCanvas.style.opacity = '1';
     drawCircular();
-
-    // Aktifin Viz Lama
     vizWallpaper.style.display = 'block';
     currentModeIndex = Math.floor(Math.random() * vizModes.length);
     document.getElementById(vizModes[currentModeIndex]).classList.add('active');
@@ -338,11 +367,8 @@
   };
 
   audio.onpause = () => {
-    // Matiin Viz Lingkaran
     circCanvas.style.opacity = '0';
     cancelAnimationFrame(circAnimId);
-
-    // Matiin Viz Lama
     vizWallpaper.style.display = 'none'; 
     clearInterval(vizInterval);
     miniBars.forEach(bar => { bar.style.height = '4px'; bar.style.backgroundColor = 'var(--neon-cyan)'; });
