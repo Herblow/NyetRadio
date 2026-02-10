@@ -56,24 +56,43 @@
     }
     @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
+    /* CIRCULAR VIZ WRAPPER */
+    .art-stack {
+      position: relative;
+      width: 260px;
+      height: 260px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #circularViz {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
     /* LOGO & ARTWORK WITH FADE EFFECT */
     .logo-main { 
-      width: 160px; height: 160px; border-radius: 20px; object-fit: cover; 
+      width: 150px; height: 150px; border-radius: 50%; object-fit: cover; 
       filter: drop-shadow(0 0 15px rgba(0, 242, 255, 0.4)); 
-      transition: opacity 0.8s ease-in-out, transform 0.4s; /* EFEK TIPIS GOKS */
-      margin-bottom: -10px; 
+      transition: opacity 0.8s ease-in-out, transform 0.4s;
+      position: relative; z-index: 2;
     }
-    .logo-main:hover { transform: scale(1.1) rotate(-3deg); }
-    
+    .logo-main:hover { transform: scale(1.05); }
+
     .radio-title { color: var(--neon-yellow); font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 10px 0; text-shadow: 3px 3px 0px #000; }
     .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
     #statusIndicator { padding: 5px 15px; border-radius: 50px; font-size: 10px; font-weight: 800; }
     .on-air { background: #ef4444; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); animation: blink 1.5s infinite; }
     .off-air { background: #475569; }
 
-    /* VISUALIZER SCREEN */
+    /* VISUALIZER SCREEN (Lama tetep disimpen biar gak ilang) */
     #vizWallpaper {
-      width: 100%; height: 160px; background: #000; border-radius: 20px; 
+      width: 100%; height: 120px; background: #000; border-radius: 20px; 
       margin: 15px 0; overflow: hidden; display: none; border: 2px solid var(--neon-cyan);
       box-shadow: 0 0 20px rgba(0, 242, 255, 0.2); position: relative; cursor: pointer;
     }
@@ -85,7 +104,7 @@
     .grid-lines { position: absolute; width: 200%; height: 200%; left: -50%; top: -50%; background-image: linear-gradient(rgba(0, 242, 255, 0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 242, 255, 0.5) 1px, transparent 1px); background-size: 40px 40px; transform: rotateX(60deg); animation: gridMove 1s linear infinite; }
     @keyframes gridMove { 0% { transform: rotateX(60deg) translateY(0); } 100% { transform: rotateX(60deg) translateY(40px); } }
     .spectrum-bg { display: flex; align-items: flex-end; justify-content: center; gap: 5px; height: 100%; padding-bottom: 10px; box-sizing: border-box; background: #000; }
-    .big-bar { width: 15px; background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink)); animation: bounce 0.5s infinite alternate; border-radius: 3px; }
+    .big-bar { width: 12px; background: linear-gradient(to top, var(--neon-cyan), var(--neon-pink)); animation: bounce 0.5s infinite alternate; border-radius: 3px; }
     @keyframes bounce { 0% { height: 10%; } 100% { height: 90%; } }
 
     /* PLAYER BOX */
@@ -94,12 +113,12 @@
     .visualizer-container { display: flex; justify-content: center; align-items: flex-end; height: 45px; gap: 3px; margin-top: 10px; }
     .bar { width: 8px; background: var(--neon-cyan); border-radius: 2px 2px 0 0; transition: height 0.1s ease; min-height: 3px; }
 
-    /* AD BANNER WITH NEON GLOW */
+    /* AD BANNER */
     .ad-banner { 
       background: rgba(0, 0, 0, 0.5); color: #fff; padding: 8px 0; margin: 15px 0; border-radius: 8px; 
-      border: 1px solid var(--neon-cyan); /* BORDER TIPIS GOKS */
+      border: 1px solid var(--neon-cyan); 
       font-family: 'Courier New', Courier, monospace; font-size: 0.9em; cursor: pointer;
-      text-shadow: 0 0 8px rgba(0, 242, 255, 0.8); /* NEON GLOW */
+      text-shadow: 0 0 8px rgba(0, 242, 255, 0.8);
     }
     .ad-banner a { color: inherit; text-decoration: none; display: block; }
 
@@ -133,7 +152,11 @@
     <div id="listenerCount">👥 0 LISTENING</div>
   </div>
 
-  <img src="https://files.catbox.moe/rse57p.png" id="albumArt" alt="Logo" class="logo-main">
+  <div class="art-stack">
+    <canvas id="circularViz" width="520" height="520"></canvas>
+    <img src="https://files.catbox.moe/rse57p.png" id="albumArt" alt="Logo" class="logo-main">
+  </div>
+  
   <h1 class="radio-title">NyetRadio</h1>
 
   <div id="vizWallpaper">
@@ -146,7 +169,7 @@
   <div class="player-box">
     <div id="nowPlaying">📡 Awaiting Signal...</div>
     <audio id="audioPlayer" controls style="width: 100%; filter: invert(100%) brightness(1.5);">
-      <source src="https://worker-vatican-tale-per.trycloudflare.com/live" type="audio/mpeg">
+      <source src="https://assured-cemetery-comparable-granny.trycloudflare.com/live" type="audio/mpeg">
     </audio>
     <div class="visualizer-container" id="visualizer"></div>
   </div>
@@ -163,7 +186,7 @@
 
   <div id="chatBox"></div>
   <input type="text" id="chatInput" placeholder="Ketik pesan lalu Enter...">
-  
+
   <button class="btn-talk" onclick="window.open('https://discord.gg/68hDfgpsFb', '_blank')">🎙 Join Discord</button>
   <button class="btn-share" id="shareBtn">📤 Share Story</button>
 </div>
@@ -191,6 +214,44 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.database();
 
+  // --- LOGIC CIRCULAR VISUALIZER (ALA YOUTUBE) ---
+  const circCanvas = document.getElementById('circularViz');
+  const circCtx = circCanvas.getContext('2d');
+  let circAnimId;
+
+  function drawCircular() {
+    circAnimId = requestAnimationFrame(drawCircular);
+    circCtx.clearRect(0, 0, circCanvas.width, circCanvas.height);
+    
+    const centerX = circCanvas.width / 2;
+    const centerY = circCanvas.height / 2;
+    const radius = 105;
+    const bars = 70;
+
+    for (let i = 0; i < bars; i++) {
+      const slow = Math.sin(Date.now() / 400 + i * 0.15) * 12;
+      const pulse = Math.random() * 35;
+      const barHeight = 8 + slow + pulse;
+      const angle = (i * Math.PI * 2) / bars;
+      
+      const x1 = centerX + Math.cos(angle) * radius;
+      const y1 = centerY + Math.sin(angle) * radius;
+      const x2 = centerX + Math.cos(angle) * (radius + barHeight);
+      const y2 = centerY + Math.sin(angle) * (radius + barHeight);
+
+      circCtx.strokeStyle = i % 2 === 0 ? '#00f2ff' : '#ff00ff';
+      circCtx.lineWidth = 4;
+      circCtx.lineCap = 'round';
+      circCtx.shadowBlur = 10;
+      circCtx.shadowColor = circCtx.strokeStyle;
+      
+      circCtx.beginPath();
+      circCtx.moveTo(x1, y1);
+      circCtx.lineTo(x2, y2);
+      circCtx.stroke();
+    }
+  }
+
   async function updateArtwork(title, artist) {
     const artEl = document.getElementById('albumArt');
     try {
@@ -198,11 +259,11 @@
       const res = await fetch(`https://itunes.apple.com/search?term=${query}&limit=1&entity=song`);
       const data = await res.json();
       if (data.results.length > 0) {
-        artEl.style.opacity = '0'; // Start fade out
+        artEl.style.opacity = '0';
         setTimeout(() => {
           const imgUrl = data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
           artEl.src = imgUrl;
-          artEl.style.opacity = '1'; // Fade back in
+          artEl.style.opacity = '1';
         }, 800);
       } else {
         artEl.src = "https://files.catbox.moe/rse57p.png";
@@ -236,17 +297,6 @@
     }
   });
 
-  document.getElementById('shareBtn').addEventListener('click', () => {
-    const track = document.getElementById('nowPlaying').innerText;
-    const shareText = `Lagi dengerin ${track} di NyetRadio! 🔥\n\nKuy dengerin bareng di sini:\nhttps://herblow.github.io/NyetRadio/`;
-    if (navigator.share) {
-      navigator.share({ title: 'NyetRadio', text: shareText, url: 'https://herblow.github.io/NyetRadio/' }).catch(err => console.log('Batal Share'));
-    } else {
-      const el = document.createElement('textarea'); el.value = shareText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
-      alert('Teks share berhasil di-copy! Paste di Story lu nyet! 🔥');
-    }
-  });
-
   const audio = document.getElementById('audioPlayer');
   const vizWallpaper = document.getElementById('vizWallpaper');
   const miniVizContainer = document.getElementById('visualizer');
@@ -261,13 +311,20 @@
   const vizModes = ['viz-plasma', 'viz-grid', 'viz-spectrum'];
   let currentModeIndex = 0;
   let vizInterval;
+
   function changeVisualizer() {
     document.querySelectorAll('.viz-mode').forEach(el => el.classList.remove('active'));
     currentModeIndex = (currentModeIndex + 1) % vizModes.length;
     document.getElementById(vizModes[currentModeIndex]).classList.add('active');
   }
   vizWallpaper.addEventListener('click', changeVisualizer);
+
   audio.onplay = () => {
+    // Aktifin Viz Lingkaran
+    circCanvas.style.opacity = '1';
+    drawCircular();
+
+    // Aktifin Viz Lama
     vizWallpaper.style.display = 'block';
     currentModeIndex = Math.floor(Math.random() * vizModes.length);
     document.getElementById(vizModes[currentModeIndex]).classList.add('active');
@@ -279,8 +336,15 @@
       });
     }, 100);
   };
+
   audio.onpause = () => {
-    vizWallpaper.style.display = 'none'; clearInterval(vizInterval);
+    // Matiin Viz Lingkaran
+    circCanvas.style.opacity = '0';
+    cancelAnimationFrame(circAnimId);
+
+    // Matiin Viz Lama
+    vizWallpaper.style.display = 'none'; 
+    clearInterval(vizInterval);
     miniBars.forEach(bar => { bar.style.height = '4px'; bar.style.backgroundColor = 'var(--neon-cyan)'; });
   };
 
@@ -295,12 +359,24 @@
   });
   db.ref("chat").limitToLast(15).on("child_added", (snap) => {
     const msg = snap.val();
-    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // TIMESTAMP GOKS
+    const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const div = document.createElement("div"); div.className = "chat-msg";
     div.innerHTML = `<small style="opacity:0.4; font-size:10px;">${time}</small> <b style="color:var(--neon-cyan)">${msg.user}:</b> ${msg.text}`;
     chatBox.appendChild(div);
     chatBox.scrollTop = chatBox.scrollHeight;
   });
+
+  document.getElementById('shareBtn').addEventListener('click', () => {
+    const track = document.getElementById('nowPlaying').innerText;
+    const shareText = `Lagi dengerin ${track} di NyetRadio! 🔥\n\nKuy dengerin bareng di sini:\nhttps://herblow.github.io/NyetRadio/`;
+    if (navigator.share) {
+      navigator.share({ title: 'NyetRadio', text: shareText, url: 'https://herblow.github.io/NyetRadio/' }).catch(err => console.log('Batal Share'));
+    } else {
+      const el = document.createElement('textarea'); el.value = shareText; document.body.appendChild(el); el.select(); document.execCommand('copy'); document.body.removeChild(el);
+      alert('Teks share berhasil di-copy! Paste di Story lu nyet! 🔥');
+    }
+  });
+
   if (!localStorage.getItem("nama")) {
     const p = prompt("Nama lu siapa nyet?"); if (p) localStorage.setItem("nama", p);
   }
