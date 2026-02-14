@@ -5,7 +5,7 @@ echo "🚀 [NyetRadio] Memulai Sinkronisasi Total..."
 rm -f tunnel.log
 
 # 2. Jalankan Cloudflare Tunnel di background
-cloudflared tunnel --url http://127.0.0.1:8000 > tunnel.log 2>&1 &
+cloudflared tunnel --url http://37.157.242.103:14303 > tunnel.log 2>&1 &
 CLOUDFLARE_PID=$!
 
 echo "⏳ Menunggu link Cloudflare (15 detik)..."
