@@ -1,21 +1,21 @@
-2026-02-15T07:14:42Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
-2026-02-15T07:14:42Z INF Requesting new quick Tunnel on trycloudflare.com...
-2026-02-15T07:14:48Z INF +--------------------------------------------------------------------------------------------+
-2026-02-15T07:14:48Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
-2026-02-15T07:14:48Z INF |  https://wing-cams-bloomberg-enough.trycloudflare.com                                      |
-2026-02-15T07:14:48Z INF +--------------------------------------------------------------------------------------------+
-2026-02-15T07:14:48Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
-2026-02-15T07:14:48Z INF Version 2026.1.2 (Checksum 454cfeabe027fdd95e6295ceb60f5ace88cdb54b702e0e1f9836d597d61b742d)
-2026-02-15T07:14:48Z INF GOOS: android, GOVersion: go1.25.6, GoArch: arm64
-2026-02-15T07:14:48Z INF Settings: map[ha-connections:1 http-host-header:37.157.242.103 protocol:quic url:http://37.157.242.103:14303]
-2026-02-15T07:14:48Z INF Autoupdate frequency is set autoupdateFreq=86400000
-2026-02-15T07:14:48Z INF Generated Connector ID: ccf48cbf-8b33-444c-a322-f2af493ba719
-2026-02-15T07:14:48Z INF Initial protocol quic
-2026-02-15T07:14:48Z INF ICMP proxy will use 10.102.66.140 as source for IPv4
-2026-02-15T07:14:48Z INF ICMP proxy will use :: as source for IPv6
-2026-02-15T07:14:48Z WRN The user running cloudflared process has a GID (group ID) that is not within ping_group_range. You might need to add that user to a group within that range, or instead update the range to encompass a group the user is already in by modifying /proc/sys/net/ipv4/ping_group_range. Otherwise cloudflared will not be able to ping this network error="open /proc/sys/net/ipv4/ping_group_range: permission denied"
-2026-02-15T07:14:48Z INF ICMP proxy will use 10.102.66.140 as source for IPv4
-2026-02-15T07:14:48Z INF ICMP proxy will use :: as source for IPv6
-2026-02-15T07:14:48Z INF Starting metrics server on 127.0.0.1:20241/metrics
-2026-02-15T07:14:49Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveP256] connIndex=0 event=0 ip=198.41.200.53
-2026-02-15T07:14:49Z INF Registered tunnel connection connIndex=0 connection=8f4a2b4d-a36c-49cd-bc43-7ff1199c9100 event=0 ip=198.41.200.53 location=sin15 protocol=quic
+2026-08-30T13:05:42Z INF Thank you for trying Cloudflare Tunnel. Doing so, without a Cloudflare account, is a quick way to experiment and try it out. However, be aware that these account-less Tunnels have no uptime guarantee, are subject to the Cloudflare Online Services Terms of Use (https://www.cloudflare.com/website-terms/), and Cloudflare reserves the right to investigate your use of Tunnels for violations of such terms. If you intend to use Tunnels in production you should use a pre-created named tunnel by following: https://developers.cloudflare.com/cloudflare-one/connections/connect-apps
+2026-08-30T13:05:42Z INF Requesting new quick Tunnel on trycloudflare.com...
+2026-08-30T13:05:56Z INF +--------------------------------------------------------------------------------------------+
+2026-08-30T13:05:56Z INF |  Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):  |
+2026-08-30T13:05:56Z INF |  https://glasgow-sandra-poly-retired.trycloudflare.com                                     |
+2026-08-30T13:05:56Z INF +--------------------------------------------------------------------------------------------+
+2026-08-30T13:05:56Z INF Cannot determine default configuration path. No file [config.yml config.yaml] in [~/.cloudflared ~/.cloudflare-warp ~/cloudflare-warp /etc/cloudflared /usr/local/etc/cloudflared]
+2026-08-30T13:05:56Z INF Version 2026.8.2 (Checksum adcbc5cb319af844a4ce932f4ed656ee8656b1c478faf5001aff4b6166a950ef)
+2026-08-30T13:05:56Z INF GOOS: android, GOVersion: go1.26.5, GoArch: arm64
+2026-08-30T13:05:56Z INF Settings: map[ha-connections:1 http-host-header:37.157.242.103 protocol:quic url:http://37.157.242.103:14303]
+2026-08-30T13:05:56Z INF Autoupdate frequency is set autoupdateFreq=86400000
+2026-08-30T13:05:56Z INF Generated Connector ID: df538038-697d-4ba9-8889-6e4b15f6aae6
+2026-08-30T13:05:56Z INF Initial protocol quic
+2026-08-30T13:05:56Z INF ICMP proxy will use 192.168.1.11 as source for IPv4
+2026-08-30T13:05:56Z INF ICMP proxy will use :: as source for IPv6
+2026-08-30T13:05:56Z WRN The user running cloudflared process has a GID (group ID) that is not within ping_group_range. You might need to add that user to a group within that range, or instead update the range to encompass a group the user is already in by modifying /proc/sys/net/ipv4/ping_group_range. Otherwise cloudflared will not be able to ping this network error="open /proc/sys/net/ipv4/ping_group_range: permission denied"
+2026-08-30T13:05:56Z INF ICMP proxy will use 192.168.1.11 as source for IPv4
+2026-08-30T13:05:56Z INF ICMP proxy will use :: as source for IPv6
+2026-08-30T13:05:56Z INF Starting metrics server on 127.0.0.1:20241/metrics
+2026-08-30T13:05:56Z INF Tunnel connection curve preferences: [X25519MLKEM768 CurveID(65074) CurveP256] connIndex=0 event=0 ip=198.41.192.37
+2026-08-30T13:05:57Z INF Registered tunnel connection connIndex=0 connection=0807a6f8-b08b-4a8f-9cfd-f98acde7c099 event=0 ip=198.41.192.37 location=sin18 protocol=quic
